@@ -1,0 +1,6 @@
+# generated or third-party content: never hand-format these
+pnpm-lock.yaml
+package-lock.json
+dist/
+coverage/
+site/
