@@ -12,7 +12,7 @@ first, so that when the web app arrives it is a shell over something already tru
 
 ---
 
-## v0.0.1 — boots
+## v0.0.1 — boots · shipped 2026-11-11
 
 **Goal:** the seam exists and is tested.
 
@@ -30,6 +30,10 @@ first, so that when the web app arrives it is a shell over something already tru
 
 **Exit:** `pnpm test` green; `bugrock diagnose` prints codes on a real pack; TUI opens and shows
 diagnostics; core boundary check green.
+
+**Met:** 26 tests, three packages typecheck clean, boundary rule green, end-to-end on the bundled
+fixture, TUI renders in a pty. Shipped as pre-release `v0.0.1`. Not yet met: `scripts/termux-check.sh`
+on a real device — that blocks `v0.1.1`, not this release.
 
 ---
 
