@@ -1,0 +1,25 @@
+{
+  "name": "@bugrock/tui",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Terminal interface for bugrock-creator-editor",
+  "bin": {
+    "bugrock-tui": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@bugrock/core": "workspace:*",
+    "ink": "^8.0.0",
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0"
+  }
+}

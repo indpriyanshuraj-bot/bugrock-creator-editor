@@ -1,0 +1,11 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "bugrock:sample_pig",
+      "is_spawnable": true,
+      "is_summonable": true
+    },
+    "components": {}
+  }
+}

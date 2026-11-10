@@ -1,0 +1,27 @@
+{
+  "name": "@bugrock/cli",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Command line interface for bugrock-creator-editor",
+  "bin": {
+    "bugrock": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "@bugrock/core": "workspace:*",
+    "commander": "^14.0.0"
+  }
+}
