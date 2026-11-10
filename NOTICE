@@ -1,0 +1,31 @@
+bugrock-creator-editor
+Copyright 2026 Priyanshu Raj and contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product is not affiliated with, endorsed by, or sponsored by Mojang Studios or Microsoft
+Corporation. "Minecraft" is a trademark of Mojang Synergies AB and is used descriptively only.
+
+--------------------------------------------------------------------------------
+Third-party material
+--------------------------------------------------------------------------------
+
+Minecraft Creator Tools
+  https://github.com/Mojang/minecraft-creator-tools
+  Copyright (c) 2025 Mojang
+  MIT License. Used as a reference implementation and, where noted, invoked as a separate
+  program. No source file from this project is copied into this repository.
+  Assets under that repository's res/latest/van path are covered by the Minecraft End User
+  License Agreement and are NOT redistributed here.
+
+bridge-core libraries (dash-compiler, molang, mc-project-core)
+  https://github.com/bridge-core
+  MIT License. Used as dependencies and as reference for project loading.
+
+bridge-core/editor
+  https://github.com/bridge-core/editor
+  GPL-3.0. Read as a reference only. No code from this project is copied, linked, or
+  redistributed here, because doing so would make this Apache-2.0 work a combined
+  GPL-3.0 work.
+
+Bundled npm dependencies are listed, with their license texts, in THIRD-PARTY-NOTICES.md.

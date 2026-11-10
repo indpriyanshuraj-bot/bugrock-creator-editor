@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+*.mcaddon
+*.mcpack
+.mcproject-cache/
+.tmp-*
+.env
+.env.*
+package-lock.json

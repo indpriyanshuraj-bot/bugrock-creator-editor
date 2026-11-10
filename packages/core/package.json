@@ -1,0 +1,25 @@
+{
+  "name": "@bugrock/core",
+  "version": "0.0.1",
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Pure engine for Minecraft Bedrock add-ons: manifest model, diagnostics, fixes, packer",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsdown"
+  },
+  "dependencies": {
+    "fflate": "^0.8.2"
+  }
+}
