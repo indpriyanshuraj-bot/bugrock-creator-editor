@@ -9,6 +9,11 @@ behavior/resource packs on a phone, in Termux, or in a terminal on a laptop.
 Not affiliated with Mojang Studios or Microsoft. "Minecraft" is a trademark of Mojang Synergies AB
 and is used here descriptively only.
 
+**Links:** [status page](https://indpriyanshuraj-bot.github.io/bugrock-creator-editor/) ·
+[roadmap board](https://github.com/users/indpriyanshuraj-bot/projects/1) ·
+[releases](https://github.com/indpriyanshuraj-bot/bugrock-creator-editor/releases) ·
+[roadmap in the repo](docs/ROADMAP.md)
+
 ## Status
 
 | Version | Theme                                                     | State       |
