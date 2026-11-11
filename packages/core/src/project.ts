@@ -2,8 +2,9 @@
 // Copyright 2026 Priyanshu Raj and contributors
 
 import { type DirEntry, readText, type Host } from './host';
+import { parseJsonc, type JsoncIssue, type SourcePosition } from './jsonc';
 import { isJunk, joinPath, normalizePath, type VPath } from './path';
-import { MANIFEST_FILE, packKindOf, parseManifest, type Manifest, type PackKind } from './manifest';
+import { MANIFEST_FILE, packKindOf, type Manifest, type PackKind } from './manifest';
 
 export interface Pack {
   /** Directory containing the manifest. */
@@ -11,8 +12,12 @@ export interface Pack {
   readonly manifestPath: VPath;
   readonly kind: PackKind;
   readonly manifest: Manifest;
-  /** Set when the manifest exists but could not be read or parsed. */
+  /** JSON Pointer -> source position, empty when the manifest could not be parsed. */
+  readonly positions: ReadonlyMap<string, SourcePosition>;
+  /** Human-readable reason the manifest is unusable. */
   readonly parseError?: string;
+  /** Same reason, with coordinates. */
+  readonly parseIssue?: JsoncIssue;
 }
 
 export interface Project {
@@ -25,6 +30,8 @@ export interface DetectOptions {
   readonly maxDepth?: number;
 }
 
+const EMPTY_POSITIONS: ReadonlyMap<string, SourcePosition> = new Map();
+
 async function readPack(host: Host, root: VPath): Promise<Pack> {
   const manifestPath = joinPath(root, MANIFEST_FILE);
   let text: string;
@@ -36,14 +43,44 @@ async function readPack(host: Host, root: VPath): Promise<Pack> {
       manifestPath,
       kind: 'unknown',
       manifest: {},
+      positions: EMPTY_POSITIONS,
       parseError: 'manifest could not be read',
     };
   }
-  const parsed = parseManifest(text);
+
+  const parsed = parseJsonc(text);
   if (!parsed.ok) {
-    return { root, manifestPath, kind: 'unknown', manifest: {}, parseError: parsed.error };
+    return {
+      root,
+      manifestPath,
+      kind: 'unknown',
+      manifest: {},
+      positions: EMPTY_POSITIONS,
+      parseError: `${parsed.issue.message} (line ${parsed.issue.line}, column ${parsed.issue.column})`,
+      parseIssue: parsed.issue,
+    };
   }
-  return { root, manifestPath, kind: packKindOf(parsed.manifest), manifest: parsed.manifest };
+
+  const value = parsed.value;
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return {
+      root,
+      manifestPath,
+      kind: 'unknown',
+      manifest: {},
+      positions: parsed.positions,
+      parseError: 'manifest is not a JSON object',
+    };
+  }
+
+  const manifest = value as Manifest;
+  return {
+    root,
+    manifestPath,
+    kind: packKindOf(manifest),
+    manifest,
+    positions: parsed.positions,
+  };
 }
 
 /**

@@ -14,6 +14,11 @@ export function uuidSeq(prefix = 1): () => string {
   };
 }
 
+/** A module uuid derived from the pack uuid, so two packs in one project never collide. */
+export function moduleUuidFor(uuid: string): string {
+  return `${uuid.slice(0, 8)}-bbbb-4ccc-8ddd-eeeeeeeeeeee`;
+}
+
 export function manifestText(overrides: Record<string, unknown> = {}): string {
   const base: Record<string, unknown> = {
     format_version: 2,
@@ -24,7 +29,7 @@ export function manifestText(overrides: Record<string, unknown> = {}): string {
       version: [1, 0, 0],
       min_engine_version: [1, 21, 0],
     },
-    modules: [{ type: 'data', uuid: '99999999-8888-4777-8666-555555555555', version: [1, 0, 0] }],
+    modules: [{ type: 'data', uuid: moduleUuidFor(FIXED_UUID), version: [1, 0, 0] }],
   };
   return JSON.stringify({ ...base, ...overrides }, null, 2);
 }
@@ -47,8 +52,6 @@ export function fullManifest(uuid: string, moduleType = 'data'): Record<string, 
       version: [1, 0, 0],
       min_engine_version: [1, 21, 0],
     },
-    modules: [
-      { type: moduleType, uuid: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee', version: [1, 0, 0] },
-    ],
+    modules: [{ type: moduleType, uuid: moduleUuidFor(uuid), version: [1, 0, 0] }],
   };
 }

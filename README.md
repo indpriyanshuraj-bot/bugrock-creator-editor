@@ -29,11 +29,14 @@ and is used here descriptively only.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for scope and exit criteria per version.
 
-## What it does today (v0.0.1)
+## What it does today (v0.0.2)
 
 - Discovers behavior/resource packs under a folder by finding `manifest.json` files.
-- Diagnoses them: parse errors, missing/invalid/duplicate UUIDs, unsupported `format_version`,
-  missing modules, dangling dependencies, missing pack icons.
+- Reads **JSONC**: comments and trailing commas are accepted, because real manifests have them.
+- Every positional diagnostic carries a **line and column**, not just a JSON pointer.
+- Diagnoses: parse errors, missing/invalid/duplicate UUIDs (pack and module), unsupported
+  `format_version`, unrecognised module types, dangling dependencies, and pack icons that are
+  missing, not a PNG, not square, or an odd size.
 - Fixes the deterministic ones (UUIDs, dangling dependency entries).
 - Packs packs into a `.mcaddon` zip.
 - CLI: `bugrock inspect | diagnose | fix | pack`.

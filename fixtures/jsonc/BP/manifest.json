@@ -1,0 +1,19 @@
+{
+  // Comments and trailing commas are legal here, and common in hand-written manifests.
+  "format_version": 2,
+  /* the header is required */
+  "header": {
+    "name": "JSONC Sample",
+    "description": "A pack whose manifest a strict JSON parser would reject",
+    "uuid": "4d5e6f70-8192-4a3b-8c4d-5e6f708192a3",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "5e6f7081-92a3-4b4c-9d5e-6f708192a3b4",
+      "version": [1, 0, 0]
+    }
+  ]
+}

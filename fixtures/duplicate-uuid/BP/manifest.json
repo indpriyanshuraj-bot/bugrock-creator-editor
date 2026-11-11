@@ -1,0 +1,12 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Duplicate A",
+    "uuid": "708192a3-b4c5-4d6e-9f70-8192a3b4c5d6",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    { "type": "data", "uuid": "8192a3b4-c5d6-4e7f-8091-92a3b4c5d6e7", "version": [1, 0, 0] }
+  ]
+}

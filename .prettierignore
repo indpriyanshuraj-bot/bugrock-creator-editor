@@ -4,3 +4,7 @@ package-lock.json
 dist/
 coverage/
 site/
+
+# fixtures that are deliberately broken: a formatter cannot parse them, that is the point
+fixtures/broken/
+fixtures/bad-icon/
