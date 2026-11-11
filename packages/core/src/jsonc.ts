@@ -32,6 +32,8 @@ export type JsoncParseResult =
       readonly value: unknown;
       /** JSON Pointer -> where that value starts in the source. */
       readonly positions: ReadonlyMap<string, SourcePosition>;
+      /** True when the source had comments, which a JSON rewrite would drop. */
+      readonly hasComments: boolean;
     }
   | { readonly ok: false; readonly issue: JsoncIssue };
 
@@ -53,6 +55,7 @@ export function parseJsonc(source: string): JsoncParseResult {
   let index = 0;
   let line = 1;
   let lineStart = 0;
+  let hasComments = false;
 
   // Skip a byte-order mark without shifting every offset by one.
   if (length > 0 && text.charCodeAt(0) === 0xfeff) {
@@ -82,10 +85,12 @@ export function parseJsonc(source: string): JsoncParseResult {
         continue;
       }
       if (ch === '/' && text[index + 1] === '/') {
+        hasComments = true;
         while (index < length && text.charCodeAt(index) !== 10) advance();
         continue;
       }
       if (ch === '/' && text[index + 1] === '*') {
+        hasComments = true;
         advance(2);
         for (;;) {
           if (index >= length) fail('unterminated block comment');
@@ -266,7 +271,7 @@ export function parseJsonc(source: string): JsoncParseResult {
     const value = parseValue('');
     skipTrivia();
     if (index < length) fail('unexpected content after the document');
-    return { ok: true, value, positions };
+    return { ok: true, value, positions, hasComments };
   } catch (error) {
     if (error instanceof JsoncParseError) return { ok: false, issue: error.issue };
     throw error;

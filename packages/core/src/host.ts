@@ -35,6 +35,8 @@ export interface Host {
   write(path: VPath, data: Uint8Array | string): Promise<void>;
   list(path: VPath): Promise<readonly DirEntry[]>;
   exists(path: VPath): Promise<boolean>;
+  /** Optional: undo needs it to delete a file a fix created. */
+  remove?(path: VPath): Promise<void>;
 }
 
 const decoder = new TextDecoder('utf-8');
@@ -120,6 +122,14 @@ export class MemoryHost implements Host {
       }
     }
     return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async remove(path: VPath): Promise<void> {
+    const normalized = normalizePath(path);
+    const prefix = `${normalized}/`;
+    for (const key of [...this.#files.keys()]) {
+      if (key === normalized || key.startsWith(prefix)) this.#files.delete(key);
+    }
   }
 
   /** Test helper: every file currently held. */

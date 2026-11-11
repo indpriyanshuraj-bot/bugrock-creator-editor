@@ -60,7 +60,7 @@ hand-written, so that stays open and is tracked on the issue.
 
 ---
 
-## v0.0.3 — fixes
+## v0.0.3 — fixes · shipped 2026-11-11
 
 **Goal:** fixes you can trust on someone else's pack.
 
@@ -71,6 +71,12 @@ hand-written, so that stays open and is tracked on the issue.
 - Property-based tests: random manifests in, no crashes, only valid output.
 
 **Exit:** the idempotency property holds across the whole fixture corpus.
+
+**Met:** `--diff` dry runs with a line diff, per-fix selection in the TUI, an on-disk journal with
+`undo` restoring byte-exact originals, and a seeded property test over 60 generated manifests that
+asserts diagnose → fix → diagnose leaves zero fixable diagnostics. That test found a real bug on
+its first run: two array deletes in one file shifted each other's indices. Fixes are also
+explicitly normalising — see [ADR 0006](decisions/0006-fixes-normalise-formatting.md).
 
 ---
 

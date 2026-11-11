@@ -75,6 +75,7 @@ describe('diagnose', () => {
 
     const diagnostics = await diagnoseProject(host, project, { newUuid: uuidSeq() });
     expect(diagnostics.map((d) => d.code)).toEqual(['BRK012']);
+    expect(project.packs[0]?.hasComments).toBe(true);
   });
 
   it('attaches a source position to positional diagnostics', async () => {

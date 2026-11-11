@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Priyanshu Raj and contributors
 
-import { mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname as nodeDirname, join, resolve, sep } from 'node:path';
 import {
   joinPath,
@@ -59,6 +59,10 @@ export class NodeHost implements Host {
     } catch {
       return false;
     }
+  }
+
+  async remove(path: VPath): Promise<void> {
+    await rm(this.#absolute(path), { recursive: true, force: true });
   }
 
   async list(path: VPath): Promise<readonly DirEntry[]> {
