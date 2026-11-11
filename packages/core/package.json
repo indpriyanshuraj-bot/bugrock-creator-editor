@@ -1,6 +1,6 @@
 {
   "name": "@bugrock/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "license": "Apache-2.0",
   "description": "Pure engine for Minecraft Bedrock add-ons: manifest model, diagnostics, fixes, packer",

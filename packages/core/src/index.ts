@@ -27,6 +27,25 @@ export {
 } from './host';
 
 export {
+  escapePointer,
+  parseJsonc,
+  type JsoncIssue,
+  type JsoncParseResult,
+  type SourcePosition,
+} from './jsonc';
+
+export {
+  isKnownManifestFormat,
+  isKnownModuleType,
+  KNOWN_MANIFEST_FORMATS,
+  KNOWN_MODULE_TYPES,
+  MANIFEST_FORMATS,
+  type ManifestFormat,
+} from './format-version';
+
+export { readPngInfo, type PngInfo } from './png';
+
+export {
   isUuid,
   isVersionTuple,
   MANIFEST_FILE,
@@ -47,6 +66,7 @@ export {
   countBySeverity,
   DIAGNOSTIC_TITLES,
   isFixable,
+  sortDiagnostics,
   type Diagnostic,
   type DiagnosticCode,
   type Fix,
@@ -54,7 +74,7 @@ export {
   type Severity,
 } from './diagnostic';
 
-export { diagnoseProject, type DiagnoseOptions } from './diagnose';
+export { diagnoseProject, positionFor, type DiagnoseOptions } from './diagnose';
 
 export { applyFixes, applyOp, parsePointer, type ApplyResult } from './fix';
 

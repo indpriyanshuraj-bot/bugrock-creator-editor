@@ -37,7 +37,7 @@ on a real device — that blocks `v0.1.1`, not this release.
 
 ---
 
-## v0.0.2 — sees
+## v0.0.2 — sees · shipped 2026-11-11
 
 **Goal:** an honest parser. Mobile add-ons are full of JSONC and stale `format_version` values.
 
@@ -51,6 +51,12 @@ on a real device — that blocks `v0.1.1`, not this release.
 - Fixture corpus: at least 30 real-world packs (license-clean), committed as text only.
 
 **Exit:** line/column present on every positional diagnostic; corpus runs in under 5s.
+
+**Met:** a hand-written JSONC parser with a JSON-Pointer→position map, positions on every
+positional diagnostic, the manifest-format and module-type registries, cross-pack UUID indexing
+(header _and_ module), dependency resolution, PNG header parsing for icons, deterministic ordering,
+and five fixtures. 52 tests. Not yet met: the 30-pack real-world corpus — the fixtures are
+hand-written, so that stays open and is tracked on the issue.
 
 ---
 

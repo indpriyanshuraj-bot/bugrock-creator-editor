@@ -1,16 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 Priyanshu Raj and contributors
 
+import { KNOWN_MANIFEST_FORMATS } from './format-version';
+import { parseJsonc } from './jsonc';
+
 export const MANIFEST_FILE = 'manifest.json';
 
-/** format_version values this tool claims to understand. */
-export const SUPPORTED_FORMAT_VERSIONS: readonly number[] = [1, 2, 3];
+/** format_version values this tool claims to understand. See format-version.ts for why. */
+export const SUPPORTED_FORMAT_VERSIONS: readonly number[] = KNOWN_MANIFEST_FORMATS;
 
 export type PackKind = 'behavior' | 'resource' | 'skin' | 'world_template' | 'unknown';
 
 const MODULE_KIND: Readonly<Record<string, PackKind>> = {
   data: 'behavior',
   script: 'behavior',
+  javascript: 'behavior',
   resources: 'resource',
   skin_pack: 'skin',
   world_template: 'world_template',
@@ -55,13 +59,14 @@ export type ParseResult =
   | { readonly ok: true; readonly manifest: Manifest }
   | { readonly ok: false; readonly error: string };
 
+/** JSONC-tolerant: comments and trailing commas are accepted, because real manifests have them. */
 export function parseManifest(text: string): ParseResult {
-  let value: unknown;
-  try {
-    value = JSON.parse(text);
-  } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+  const parsed = parseJsonc(text);
+  if (!parsed.ok) {
+    const { issue } = parsed;
+    return { ok: false, error: `${issue.message} (line ${issue.line}, column ${issue.column})` };
   }
+  const value = parsed.value;
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return { ok: false, error: 'manifest is not a JSON object' };
   }

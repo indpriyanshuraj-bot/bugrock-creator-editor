@@ -1,0 +1,12 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Bad Icon",
+    "uuid": "a3b4c5d6-e7f8-4a91-82b3-b4c5d6e7f809",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    { "type": "data", "uuid": "b4c5d6e7-f809-4ab2-93c4-c5d6e7f80912", "version": [1, 0, 0] }
+  ]
+}

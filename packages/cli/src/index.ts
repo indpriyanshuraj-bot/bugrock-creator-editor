@@ -44,7 +44,10 @@ function printDiagnostics(diagnostics: readonly Diagnostic[]): void {
     return;
   }
   for (const diagnostic of diagnostics) {
-    const where = diagnostic.pointer ? `${diagnostic.path}#${diagnostic.pointer}` : diagnostic.path;
+    const location = diagnostic.position
+      ? `${diagnostic.path}:${diagnostic.position.line}:${diagnostic.position.column}`
+      : diagnostic.path;
+    const where = diagnostic.pointer ? `${location}  (${diagnostic.pointer})` : location;
     const fix = isFixable(diagnostic) ? `  (fix: ${diagnostic.fix?.summary})` : '';
     console.log(`${severityBadge(diagnostic)} ${diagnostic.code}  ${where}`);
     console.log(`        ${diagnostic.message}${fix}`);

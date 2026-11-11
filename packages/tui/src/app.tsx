@@ -159,7 +159,12 @@ export function App({ root }: { readonly root: string }): React.ReactElement {
               <Text key={`${diagnostic.code}-${diagnostic.path}-${index}`}>
                 <Text color={selected ? 'white' : undefined}>{selected ? '>' : ' '} </Text>
                 <Text color={colour}>{diagnostic.code}</Text> {diagnostic.path}
-                <Text dimColor>{diagnostic.pointer ?? ''}</Text>
+                <Text dimColor>
+                  {diagnostic.position
+                    ? `:${diagnostic.position.line}:${diagnostic.position.column}`
+                    : ''}
+                  {diagnostic.pointer ? ` ${diagnostic.pointer}` : ''}
+                </Text>
               </Text>
             );
           })

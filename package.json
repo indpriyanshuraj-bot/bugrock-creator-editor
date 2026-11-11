@@ -1,6 +1,6 @@
 {
   "name": "bugrock-creator-editor",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "description": "Mobile-first Minecraft Bedrock add-on toolkit (experimental)",
