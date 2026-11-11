@@ -14,6 +14,7 @@ const JUNK_NAMES = new Set([
   '.DS_Store',
   'Thumbs.db',
   '.mcproject-cache',
+  '.bugrock',
 ]);
 
 export function normalizePath(input: string): VPath {

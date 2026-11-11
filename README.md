@@ -29,7 +29,7 @@ and is used here descriptively only.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for scope and exit criteria per version.
 
-## What it does today (v0.0.2)
+## What it does today (v0.0.3)
 
 - Discovers behavior/resource packs under a folder by finding `manifest.json` files.
 - Reads **JSONC**: comments and trailing commas are accepted, because real manifests have them.
@@ -37,7 +37,13 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for scope and exit criteria per version.
 - Diagnoses: parse errors, missing/invalid/duplicate UUIDs (pack and module), unsupported
   `format_version`, unrecognised module types, dangling dependencies, and pack icons that are
   missing, not a PNG, not square, or an odd size.
-- Fixes the deterministic ones (UUIDs, dangling dependency entries).
+- Fixes the deterministic ones (UUIDs, dangling dependency entries) — **preview first with
+  `--diff`**, then apply. Every apply writes a journal, and `bugrock undo` restores the exact
+  original bytes.
+- **Fixes normalise formatting.** A fix re-serialises the manifest as JSON, so comments are dropped
+  and arrays are expanded: a one-line UUID fix can read as a 20-line diff. The CLI warns by name
+  before doing it, `--diff` shows it, and `undo` reverts it. See
+  [ADR 0006](docs/decisions/0006-fixes-normalise-formatting.md).
 - Packs packs into a `.mcaddon` zip.
 - CLI: `bugrock inspect | diagnose | fix | pack`.
 - TUI: `bugrock-tui <path>`.
@@ -57,7 +63,9 @@ pnpm build
 
 # then, against the bundled fixture or your own project:
 node packages/cli/dist/index.js diagnose ./fixtures/sample
-node packages/cli/dist/index.js pack ./fixtures/sample
+node packages/cli/dist/index.js fix ./fixtures/sample --diff   # look first
+node packages/cli/dist/index.js fix ./fixtures/sample          # then apply
+node packages/cli/dist/index.js undo ./fixtures/sample         # change your mind
 node packages/tui/dist/index.js ./fixtures/sample
 ```
 

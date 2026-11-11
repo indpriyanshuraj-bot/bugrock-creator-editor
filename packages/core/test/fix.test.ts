@@ -43,6 +43,29 @@ describe('fix', () => {
     expect(isUuid(updated.header.uuid)).toBe(true);
   });
 
+  it('fixes a JSONC manifest instead of refusing it', async () => {
+    const source = `{
+      // the uuid below is invalid, which is the point of this fixture
+      "format_version": 2,
+      "header": { "name": "jsonc", "uuid": "nope", "version": [1, 0, 0] },
+      "modules": [{ "type": "data", "uuid": "11111111-2222-4333-8444-555555555555" }],
+    }`;
+    const host = projectHost({ BP: source });
+    const project = await detectProject(host, '.');
+    const diagnostics = await diagnoseProject(host, project, { newUuid: uuidSeq() });
+
+    const result = await applyFixes(host, diagnostics);
+    expect(result.applied).toBeGreaterThan(0);
+
+    const updated = await readJson<{ header: { uuid: string } }>(host, 'BP/manifest.json');
+    expect(isUuid(updated.header.uuid)).toBe(true);
+
+    const again = await diagnoseProject(host, await detectProject(host, '.'), {
+      newUuid: uuidSeq(7),
+    });
+    expect(again.filter(isFixable)).toEqual([]);
+  });
+
   it('is idempotent: fix once, nothing fixable remains', async () => {
     const manifest = fullManifest(FIXED_UUID);
     (manifest.header as Record<string, unknown>).uuid = undefined;

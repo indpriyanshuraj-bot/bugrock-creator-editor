@@ -14,6 +14,8 @@ export interface Pack {
   readonly manifest: Manifest;
   /** JSON Pointer -> source position, empty when the manifest could not be parsed. */
   readonly positions: ReadonlyMap<string, SourcePosition>;
+  /** True when the manifest had JSONC comments, which a fix rewrite would drop. */
+  readonly hasComments?: boolean;
   /** Human-readable reason the manifest is unusable. */
   readonly parseError?: string;
   /** Same reason, with coordinates. */
@@ -80,6 +82,7 @@ async function readPack(host: Host, root: VPath): Promise<Pack> {
     kind: packKindOf(manifest),
     manifest,
     positions: parsed.positions,
+    hasComments: parsed.hasComments,
   };
 }
 

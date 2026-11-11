@@ -9,9 +9,12 @@ import {
   CORE_VERSION,
   detectProject,
   diagnoseProject,
+  formatFileDiff,
   isFixable,
+  listJournals,
   packFileName,
   packProject,
+  undoJournal,
   type Diagnostic,
   type Project,
 } from '@bugrock/core';
@@ -64,6 +67,11 @@ async function load(root: string): Promise<{ host: NodeHost; project: Project }>
   return { host, project };
 }
 
+function fail(error: unknown): void {
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = EXIT_FAILURE;
+}
+
 const program = new Command();
 
 program
@@ -98,8 +106,7 @@ program
       }
       process.exitCode = summary.length > 0 ? EXIT_OK : EXIT_PROBLEMS;
     } catch (error) {
-      console.error(error instanceof Error ? error.message : error);
-      process.exitCode = EXIT_FAILURE;
+      fail(error);
     }
   });
 
@@ -119,50 +126,124 @@ program
       }
       process.exitCode = diagnostics.some((d) => d.severity === 'error') ? EXIT_PROBLEMS : EXIT_OK;
     } catch (error) {
-      console.error(error instanceof Error ? error.message : error);
-      process.exitCode = EXIT_FAILURE;
+      fail(error);
     }
   });
 
 program
   .command('fix')
   .argument('<path>', 'project directory')
+  .option('--diff', 'show what would change, write nothing')
+  .option('--no-journal', 'do not record an undo journal')
   .option('--json', 'machine readable output')
-  .option('--dry-run', 'report what would change without writing')
   .description('apply the deterministic fixes attached to diagnostics')
-  .action(async (path: string, options: CommonOptions & { dryRun?: boolean }) => {
+  .action(async (path: string, options: CommonOptions & { diff?: boolean; journal?: boolean }) => {
     try {
       const { host, project } = await load(resolve(path));
       const diagnostics = await diagnoseProject(host, project);
       const fixable = diagnostics.filter(isFixable);
-      if (options.dryRun) {
-        const plan = fixable.map((d) => ({
-          code: d.code,
-          path: d.path,
-          pointer: d.pointer,
-          fix: d.fix,
-        }));
-        if (options.json) console.log(JSON.stringify({ dryRun: true, plan }, null, 2));
-        else if (plan.length === 0) console.log('nothing to fix');
-        else
-          for (const item of plan)
-            console.log(`would fix ${item.code} ${item.path}#${item.pointer}`);
+
+      if (options.diff) {
+        const result = await applyFixes(host, fixable, { dryRun: true });
+        if (options.json) {
+          console.log(
+            JSON.stringify({ dryRun: true, applied: result.applied, diffs: result.diffs }, null, 2),
+          );
+        } else if (result.diffs.length === 0) {
+          console.log('nothing to fix');
+        } else {
+          for (const diff of result.diffs) console.log(formatFileDiff(diff));
+          const added = result.diffs.reduce((sum, d) => sum + d.added, 0);
+          const removed = result.diffs.reduce((sum, d) => sum + d.removed, 0);
+          console.log(
+            `\n${result.applied} fix(es) would change ${added} line(s), remove ${removed}`,
+          );
+        }
         process.exitCode = EXIT_OK;
         return;
       }
-      const result = await applyFixes(host, diagnostics);
+
+      const commented = project.packs.filter((pack) => pack.hasComments).map((p) => p.manifestPath);
+      if (commented.length > 0 && !options.json) {
+        console.warn(
+          `note: fixing rewrites ${commented.join(', ')} as plain JSON and drops its comments. ` +
+            'Use --diff to see the result first.',
+        );
+      }
+
+      const result = await applyFixes(host, fixable, { journal: options.journal !== false });
       if (options.json) {
-        console.log(JSON.stringify({ applied: result.applied, files: result.files }, null, 2));
+        console.log(
+          JSON.stringify(
+            { applied: result.applied, files: result.files, journalId: result.journalId ?? null },
+            null,
+            2,
+          ),
+        );
       } else if (result.applied === 0) {
         console.log('nothing to fix');
       } else {
         console.log(`applied ${result.applied} fix(es) to ${result.files.length} file(s)`);
         for (const file of result.files) console.log(`  ${file}`);
+        if (result.journalId) console.log(`undo with: bugrock undo ${path}`);
       }
       process.exitCode = EXIT_OK;
     } catch (error) {
-      console.error(error instanceof Error ? error.message : error);
-      process.exitCode = EXIT_FAILURE;
+      fail(error);
+    }
+  });
+
+program
+  .command('journal')
+  .argument('<path>', 'project directory')
+  .option('--json', 'machine readable output')
+  .description('list recorded fix journals, newest first')
+  .action(async (path: string, options: CommonOptions) => {
+    try {
+      const host = new NodeHost(resolve(path));
+      const journals = await listJournals(host);
+      if (options.json) {
+        console.log(JSON.stringify({ journals }, null, 2));
+      } else if (journals.length === 0) {
+        console.log('no journals recorded');
+      } else {
+        for (const journal of journals) {
+          console.log(`${journal.id}  ${journal.createdAt}  ${journal.files} file(s)`);
+          if (journal.summary) console.log(`  ${journal.summary}`);
+        }
+      }
+      process.exitCode = EXIT_OK;
+    } catch (error) {
+      fail(error);
+    }
+  });
+
+program
+  .command('undo')
+  .argument('<path>', 'project directory')
+  .option('--id <id>', 'journal id (defaults to the newest)')
+  .option('--json', 'machine readable output')
+  .description('revert the most recent fix')
+  .action(async (path: string, options: CommonOptions & { id?: string }) => {
+    try {
+      const host = new NodeHost(resolve(path));
+      const result = await undoJournal(host, options.id);
+      if (!result) {
+        if (options.json) console.log(JSON.stringify({ undone: null }, null, 2));
+        else console.log('no journal to undo');
+        process.exitCode = EXIT_PROBLEMS;
+        return;
+      }
+      if (options.json) {
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        console.log(`reverted ${result.id}`);
+        for (const file of result.restored) console.log(`  restored ${file}`);
+        for (const file of result.removed) console.log(`  removed ${file}`);
+      }
+      process.exitCode = EXIT_OK;
+    } catch (error) {
+      fail(error);
     }
   });
 
@@ -190,8 +271,7 @@ program
       }
       process.exitCode = EXIT_OK;
     } catch (error) {
-      console.error(error instanceof Error ? error.message : error);
-      process.exitCode = EXIT_FAILURE;
+      fail(error);
     }
   });
 

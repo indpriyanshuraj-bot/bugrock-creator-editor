@@ -26,6 +26,15 @@ describe('jsonc', () => {
     }
   });
 
+  it('reports whether comments were present', () => {
+    const plain = parseJsonc('{"a":1}');
+    expect(plain.ok && plain.hasComments).toBe(false);
+    const line = parseJsonc('{\n // hi\n "a":1}');
+    expect(line.ok && line.hasComments).toBe(true);
+    const block = parseJsonc('{/* hi */"a":1}');
+    expect(block.ok && block.hasComments).toBe(true);
+  });
+
   it('records positions by JSON pointer', () => {
     const source = '{\n  "header": {\n    "uuid": "abc"\n  }\n}';
     const result = parseJsonc(source);

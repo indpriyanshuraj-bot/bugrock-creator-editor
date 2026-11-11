@@ -76,6 +76,29 @@ export {
 
 export { diagnoseProject, positionFor, type DiagnoseOptions } from './diagnose';
 
-export { applyFixes, applyOp, parsePointer, type ApplyResult } from './fix';
+export { applyFixes, applyOp, parsePointer, type ApplyOptions, type ApplyResult } from './fix';
+
+export {
+  diffFile,
+  diffText,
+  formatFileDiff,
+  type DiffKind,
+  type DiffLine,
+  type FileDiff,
+  type Hunk,
+} from './diff';
+
+export {
+  JOURNAL_DIR,
+  listJournals,
+  readJournal,
+  undoJournal,
+  writeJournal,
+  type Journal,
+  type JournalEntry,
+  type JournalSummary,
+  type UndoResult,
+  type WriteJournalOptions,
+} from './journal';
 
 export { countPackFiles, packFileName, packProject, type PackOptions } from './pack';
