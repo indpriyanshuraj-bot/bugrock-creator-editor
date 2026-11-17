@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       # version comes from package.json "packageManager" — do not also pass one here,
       # pnpm/action-setup fails with ERR_PNPM_BAD_PM_VERSION if both are set.
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 22
